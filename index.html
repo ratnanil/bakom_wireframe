@@ -276,6 +276,30 @@
     .legend-item { display: flex; align-items: center; gap: 5px; font-size: 15px; color: #3a4455; }
     .legend-dot { width: 12px; height: 12px; border-radius: 2px; }
 
+    /* ═══════════════════════════
+       PANEL 3 — CANTON MATRIX
+    ═══════════════════════════ */
+    .canton-matrix {
+      width: 100%; border-collapse: collapse;
+    }
+    .canton-matrix thead th {
+      font-size: 14px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.4px; color: #7a8899;
+      padding: 10px 14px; border-bottom: 2.5px solid #c5cad4;
+      background: #f2f4f7; text-align: center;
+    }
+    .canton-matrix thead th:first-child { text-align: left; }
+    .canton-matrix td {
+      padding: 10px 14px; border-bottom: 1.5px solid #edf0f4;
+      vertical-align: middle; background: #fff;
+    }
+    .canton-matrix tr:nth-child(even) td { background: #f8f9fb; }
+    .canton-matrix td:first-child {
+      font-size: 17px; font-weight: 700; color: #2c3e50; white-space: nowrap;
+    }
+    .canton-matrix td:not(:first-child) { text-align: center; }
+    .donut-cell { display: inline-flex; align-items: center; justify-content: center; }
+
   </style>
 </head>
 <body>
@@ -300,7 +324,7 @@
 
       <div class="raster-left">
         <div>
-          <div class="lbl">Legend</div>
+          <!-- <div class="lbl">Legende</div> -->
           <!-- bivariate legend: color grid + axis labels -->
           <div style="display:flex;flex-direction:column;gap:3px;">
 
@@ -309,11 +333,11 @@
 
               <!-- Y-axis: rotated label + tick labels, both sized to grid height -->
               <div style="display:flex;flex-direction:row;align-items:center;gap:2px;height:117px;flex-shrink:0;">
-                <div style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:13px;font-weight:700;color:#555;letter-spacing:0.3px;height:100%;display:flex;align-items:center;justify-content:center;">Accessibility → </div>
+                <div style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:13px;font-weight:700;color:#555;letter-spacing:0.3px;height:100%;display:flex;align-items:center;justify-content:center;">Zugänglichkeit → </div>
                 <div style="display:flex;flex-direction:column;justify-content:space-around;height:100%;font-size:11px;color:#7a8899;text-align:right;line-height:1;">
-                  <span>Near</span>
-                  <span>Med.</span>
-                  <span>Far</span>
+                  <span>Nah</span>
+                  <span>Mittel.</span>
+                  <span>Weit</span>
                 </div>
               </div>
 
@@ -323,16 +347,16 @@
 
             <!-- X tick labels -->
             <div style="display:flex;justify-content:space-around;font-size:11px;color:#7a8899;padding-left:36px;">
-              <span>Low</span><span>Med.</span><span>High</span>
+              <span>Tief</span><span>Mittel</span><span>Hoch</span>
             </div>
 
             <!-- X axis title -->
-            <div style="text-align:center;font-size:13px;font-weight:700;color:#555;letter-spacing:0.3px;padding-left:36px;">Availability →</div>
+            <div style="text-align:center;font-size:13px;font-weight:700;color:#555;letter-spacing:0.3px;padding-left:36px;">Verfügbarkeit →</div>
 
           </div>
         </div>
         <div>
-          <div class="lbl">Layers</div>
+          <div class="lbl">Parameter</div>
           <div class="layer-row">
             <div class="layer-swatch" style="background:#3498db;"></div>
             <div style="flex:1;"><i class="fa-solid fa-envelope"></i> </div>
@@ -351,7 +375,7 @@
          
         </div>
         <div>
-          <div class="lbl">Opacity</div>
+          <div class="lbl">Transparenz</div>
           <div style="display:flex;align-items:center;gap:7px;">
             <div class="slider-track">
               <div class="slider-fill" style="width:75%;"></div>
@@ -377,14 +401,25 @@
     <div class="raster-left">
 
       <div>
-        <div class="lbl">Legend</div>
-        <div class="placeholder" style="height:90px;font-size:14px;text-transform:none;letter-spacing:0;">
-          <span style="color:#9aa4b2;">vector features</span>
+        <div class="lbl">Verfügbarkeit</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div class="layer-row" style="border:none;">
+            <div class="layer-swatch" style="background:#27ae60;border-radius:50%;"></div>
+            <div style="flex:1;font-size:16px;color:#3a4455;">Hoch</div>
+          </div>
+          <div class="layer-row" style="border:none;">
+            <div class="layer-swatch" style="background:#f39c12;border-radius:50%;"></div>
+            <div style="flex:1;font-size:16px;color:#3a4455;">Mittel</div>
+          </div>
+          <div class="layer-row" style="border:none;">
+            <div class="layer-swatch" style="background:#e74c3c;border-radius:50%;"></div>
+            <div style="flex:1;font-size:16px;color:#3a4455;">Tief</div>
+          </div>
         </div>
       </div>
 
       <div>
-        <div class="lbl">Layers</div>
+        <div class="lbl">Paramter</div>
         <div class="layer-row">
           <div class="layer-swatch" style="background:#3498db;"></div>
           <div style="flex:1;"><i class="fa-solid fa-envelope"></i></div>
@@ -401,8 +436,18 @@
           <div class="toggle off"></div>
         </div>
       </div>
-
       <div>
+        <div class="lbl">Transparenz</div>
+        <div style="display:flex;align-items:center;gap:7px;">
+          <div class="slider-track">
+            <div class="slider-fill" style="width:75%;"></div>
+            <div class="slider-thumb" style="left:calc(75% - 8px);"></div>
+          </div>
+          <span style="font-size:15px;color:#3a4455;font-weight:700;">75%</span>
+        </div>
+      </div>
+
+      <!-- <div>
         <div class="lbl">Filter</div>
         <div style="display:flex;flex-direction:column;gap:6px;">
           <div class="ftype-btn active">All (147)</div>
@@ -410,7 +455,7 @@
           <div class="ftype-btn">Line</div>
           <div class="ftype-btn">Point</div>
         </div>
-      </div>
+      </div> -->
 
     </div>
 
@@ -430,96 +475,26 @@
 
   </div>
 
-  <!-- ═══ PANEL 3 — AGGREGATE GAUGES ═══ -->
-  <div id="panel-gauges" class="panel">
-
-    <div class="kpi-row">
-      <div class="kpi">
-        <div class="kpi-lbl">Total Area</div>
-        <div class="kpi-val">3,842<br><span class="kpi-unit">km²</span></div>
-        <div class="kpi-delta up">▲ 2.4%</div>
-        <div class="sparkline">
-          <div class="sb" style="height:40%;background:#3498db;"></div><div class="sb" style="height:55%;background:#3498db;"></div><div class="sb" style="height:62%;background:#3498db;"></div><div class="sb" style="height:70%;background:#3498db;"></div><div class="sb" style="height:80%;background:#3498db;"></div><div class="sb last" style="height:88%;background:#3498db;"></div>
-        </div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-lbl">Features</div>
-        <div class="kpi-val">147</div>
-        <div class="kpi-delta dn">▼ 3 items</div>
-        <div class="sparkline">
-          <div class="sb" style="height:72%;background:#e74c3c;"></div><div class="sb" style="height:75%;background:#e74c3c;"></div><div class="sb" style="height:72%;background:#e74c3c;"></div><div class="sb" style="height:70%;background:#e74c3c;"></div><div class="sb" style="height:66%;background:#e74c3c;"></div><div class="sb last" style="height:62%;background:#e74c3c;"></div>
-        </div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-lbl">Avg. Precip.</div>
-        <div class="kpi-val">612<br><span class="kpi-unit">mm/yr</span></div>
-        <div class="kpi-delta up">▲ 8.1%</div>
-        <div class="sparkline">
-          <div class="sb" style="height:45%;background:#2ecc71;"></div><div class="sb" style="height:58%;background:#2ecc71;"></div><div class="sb" style="height:65%;background:#2ecc71;"></div><div class="sb" style="height:75%;background:#2ecc71;"></div><div class="sb" style="height:82%;background:#2ecc71;"></div><div class="sb last" style="height:90%;background:#2ecc71;"></div>
-        </div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-lbl">Coverage</div>
-        <div class="kpi-val">78<span class="kpi-unit">%</span></div>
-        <div class="kpi-delta up">▲ 5%</div>
-        <div class="sparkline">
-          <div class="sb" style="height:50%;background:#9b59b6;"></div><div class="sb" style="height:60%;background:#9b59b6;"></div><div class="sb" style="height:65%;background:#9b59b6;"></div><div class="sb" style="height:70%;background:#9b59b6;"></div><div class="sb" style="height:75%;background:#9b59b6;"></div><div class="sb last" style="height:78%;background:#9b59b6;"></div>
-        </div>
-      </div>
+  <!-- ═══ PANEL 3 — CANTON MATRIX ═══ -->
+  <div id="panel-gauges" class="panel" style="flex-direction:column;overflow:hidden;">
+    <div class="legend" style="padding:10px 14px;border-bottom:2px solid #c5cad4;background:#f2f4f7;flex-shrink:0;">
+      <div class="legend-item"><div class="legend-dot" style="background:#2d6a4f;"></div>Sehr gut</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#74c69d;"></div>Gut</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f4a261;"></div>Ungenügend</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#c0392b;"></div>Sehr ungenügend</div>
     </div>
-
-    <div class="gauge-row">
-      <div class="gauge-col">
-        <div class="gauge-title">Data Quality</div>
-        <svg class="gauge-svg" viewBox="0 0 150 84">
-          <path d="M 8 80 A 67 67 0 0 1 142 80" fill="none" stroke="#e8ebf0" stroke-width="13" stroke-linecap="round"/>
-          <path d="M 8 80 A 67 67 0 0 1 142 80" fill="none" stroke="#27ae60" stroke-width="13" stroke-linecap="round"
-                stroke-dasharray="210" stroke-dashoffset="31"/>
-          <text x="75" y="73" text-anchor="middle" font-size="24" font-weight="800" fill="#2c3e50">85%</text>
-        </svg>
-        <div class="gauge-sub">Good · threshold 70%</div>
-      </div>
-      <div class="gauge-col">
-        <div class="gauge-title">Proc. Load</div>
-        <svg class="gauge-svg" viewBox="0 0 150 84">
-          <path d="M 8 80 A 67 67 0 0 1 142 80" fill="none" stroke="#e8ebf0" stroke-width="13" stroke-linecap="round"/>
-          <path d="M 8 80 A 67 67 0 0 1 142 80" fill="none" stroke="#f39c12" stroke-width="13" stroke-linecap="round"
-                stroke-dasharray="210" stroke-dashoffset="105"/>
-          <text x="75" y="73" text-anchor="middle" font-size="24" font-weight="800" fill="#2c3e50">50%</text>
-        </svg>
-        <div class="gauge-sub">Moderate · 4 cores</div>
-      </div>
-      <div class="gauge-col">
-        <div class="gauge-title">Completeness</div>
-        <svg class="gauge-svg" viewBox="0 0 150 84">
-          <path d="M 8 80 A 67 67 0 0 1 142 80" fill="none" stroke="#e8ebf0" stroke-width="13" stroke-linecap="round"/>
-          <path d="M 8 80 A 67 67 0 0 1 142 80" fill="none" stroke="#e74c3c" stroke-width="13" stroke-linecap="round"
-                stroke-dasharray="210" stroke-dashoffset="158"/>
-          <text x="75" y="73" text-anchor="middle" font-size="24" font-weight="800" fill="#2c3e50">25%</text>
-        </svg>
-        <div class="gauge-sub">Low · needs attention</div>
-      </div>
+    <div style="flex:1;overflow-y:auto;">
+      <table class="canton-matrix">
+        <thead>
+          <tr>
+            <th style="text-align:left;">Kanton</th>
+            <th>Gravitationsmass</th>
+            <th>Multikanal-Mass</th>
+          </tr>
+        </thead>
+        <tbody id="canton-tbody"></tbody>
+      </table>
     </div>
-
-    <div class="chart-row">
-      <div class="chart-title">Monthly Aggregates by Region</div>
-      <div class="chart-area">
-        <div class="bar-grp"><div class="bar-stack" style="height:75px;"><div class="bs" style="height:40%;background:#3498db;"></div><div class="bs" style="height:35%;background:#2ecc71;"></div><div class="bs" style="height:25%;background:#e74c3c;"></div></div><div class="bar-xl">Jan</div></div>
-        <div class="bar-grp"><div class="bar-stack" style="height:95px;"><div class="bs" style="height:45%;background:#3498db;"></div><div class="bs" style="height:30%;background:#2ecc71;"></div><div class="bs" style="height:25%;background:#e74c3c;"></div></div><div class="bar-xl">Feb</div></div>
-        <div class="bar-grp"><div class="bar-stack" style="height:65px;"><div class="bs" style="height:50%;background:#3498db;"></div><div class="bs" style="height:25%;background:#2ecc71;"></div><div class="bs" style="height:25%;background:#e74c3c;"></div></div><div class="bar-xl">Mar</div></div>
-        <div class="bar-grp"><div class="bar-stack" style="height:108px;"><div class="bs" style="height:40%;background:#3498db;"></div><div class="bs" style="height:40%;background:#2ecc71;"></div><div class="bs" style="height:20%;background:#e74c3c;"></div></div><div class="bar-xl">Apr</div></div>
-        <div class="bar-grp"><div class="bar-stack" style="height:85px;"><div class="bs" style="height:35%;background:#3498db;"></div><div class="bs" style="height:40%;background:#2ecc71;"></div><div class="bs" style="height:25%;background:#e74c3c;"></div></div><div class="bar-xl">May</div></div>
-        <div class="bar-grp"><div class="bar-stack" style="height:118px;"><div class="bs" style="height:50%;background:#3498db;"></div><div class="bs" style="height:30%;background:#2ecc71;"></div><div class="bs" style="height:20%;background:#e74c3c;"></div></div><div class="bar-xl">Jun</div></div>
-        <div class="bar-grp"><div class="bar-stack" style="height:100px;"><div class="bs" style="height:45%;background:#3498db;"></div><div class="bs" style="height:35%;background:#2ecc71;"></div><div class="bs" style="height:20%;background:#e74c3c;"></div></div><div class="bar-xl">Jul</div></div>
-        <div class="bar-grp"><div class="bar-stack" style="height:82px;"><div class="bs" style="height:40%;background:#3498db;"></div><div class="bs" style="height:35%;background:#2ecc71;"></div><div class="bs" style="height:25%;background:#e74c3c;"></div></div><div class="bar-xl">Aug</div></div>
-      </div>
-      <div class="legend">
-        <div class="legend-item"><div class="legend-dot" style="background:#3498db;"></div>Region A</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#2ecc71;"></div>Region B</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#e74c3c;"></div>Region C</div>
-      </div>
-    </div>
-
   </div>
 
 </div><!-- /frame -->
@@ -562,6 +537,50 @@
         }
       }).addTo(vectorMap);
     });
+
+  // ── Canton matrix ───────────────────────────────────────────────────────────
+  const CANTON_DATA = [
+    { name: 'Zürich',      g: [42, 33, 16,  9], m: [38, 37, 18,  7] },
+    { name: 'Bern',        g: [30, 40, 20, 10], m: [25, 38, 25, 12] },
+    { name: 'Luzern',      g: [45, 30, 18,  7], m: [38, 35, 20,  7] },
+    { name: 'Basel-Stadt', g: [56, 29, 10,  5], m: [51, 31, 13,  5] },
+    { name: 'St. Gallen',  g: [28, 38, 22, 12], m: [30, 35, 22, 13] },
+    { name: 'Aargau',      g: [35, 37, 19,  9], m: [32, 40, 20,  8] },
+  ];
+  const DONUT_COLORS = ['#2d6a4f', '#74c69d', '#f4a261', '#c0392b'];
+
+  function donutSVG(percents) {
+    const r = 42, sw = 15, pad = 4;
+    const size = 2 * (r + sw / 2 + pad);
+    const cx = size / 2, cy = size / 2;
+    const C = 2 * Math.PI * r;
+    let segs = '';
+    let cum = 0;
+    percents.forEach((p, i) => {
+      const len = p / 100 * C;
+      const rot = cum / 100 * 360 - 90;
+      segs += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none"
+        stroke="${DONUT_COLORS[i]}" stroke-width="${sw}"
+        stroke-dasharray="${len.toFixed(2)} ${C.toFixed(2)}"
+        transform="rotate(${rot.toFixed(1)},${cx},${cy})"/>`;
+      cum += p;
+    });
+    const good = percents[0] + percents[1];
+    return `<div class="donut-cell">
+      <svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}">
+        <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#e8ebf0" stroke-width="${sw}"/>
+        ${segs}
+        <text x="${cx}" y="${cy + 5}" text-anchor="middle" font-size="15" font-weight="800" fill="#2c3e50">${good}%</text>
+      </svg>
+    </div>`;
+  }
+
+  const tbody = document.getElementById('canton-tbody');
+  CANTON_DATA.forEach(c => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${c.name}</td><td>${donutSVG(c.g)}</td><td>${donutSVG(c.m)}</td>`;
+    tbody.appendChild(tr);
+  });
 
   // ── Tab switching ───────────────────────────────────────────────────────────
   function switchTab(el, name) {

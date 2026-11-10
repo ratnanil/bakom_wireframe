@@ -276,24 +276,6 @@
     .legend-item { display: flex; align-items: center; gap: 5px; font-size: 15px; color: #3a4455; }
     .legend-dot { width: 12px; height: 12px; border-radius: 2px; }
 
-    /* ── Gemeinde traffic-light markers ── */
-    .gem-marker {
-      display: flex; gap: 5px;
-      background: rgba(255,255,255,0.92);
-      border: 1.5px solid #aaa;
-      border-radius: 5px;
-      padding: 3px 6px;
-      font-family: 'Segoe UI', sans-serif;
-      font-size: 11px; font-weight: 600;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.18);
-      white-space: nowrap;
-      pointer-events: none;
-    }
-    .gem-ind { display: flex; align-items: center; gap: 3px; color: #444; }
-    .gem-dot {
-      width: 11px; height: 11px; border-radius: 50%;
-      border: 1px solid rgba(0,0,0,0.18); display: inline-block;
-    }
   </style>
 </head>
 <body>
@@ -543,8 +525,8 @@
 </div><!-- /frame -->
 
 <script>
-  const BOUNDS  = [[47.393974, 8.631302], [47.511779, 8.828406]];
-  const CENTER  = [47.4529, 8.7299];
+  const BOUNDS  = [[47.383411, 8.612791], [47.551197, 8.955457]];
+  const CENTER  = [47.467304, 8.784124];
   const ZOOM    = 12;
 
   const rasterMap = L.map('map-raster', { zoomControl: true, attributionControl: false })
@@ -563,57 +545,22 @@
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 })
     .addTo(vectorMap);
 
-  // Traffic-light colour per value level
-  const TL = {
-    acc:   { far: '#e74c3c', med: '#f39c12', near: '#27ae60' },
-    avail: { low: '#e74c3c', med: '#f39c12', high: '#27ae60' }
-  };
-
-  // Visual centroid: bbox midpoint (handles Polygon + MultiPolygon)
-  function bboxCenter(geometry) {
-    const rings = geometry.type === 'Polygon'
-      ? [geometry.coordinates[0]]
-      : geometry.coordinates.map(p => p[0]);
-    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
-    rings.forEach(ring => ring.forEach(([x, y]) => {
-      if (x < x0) x0 = x; if (x > x1) x1 = x;
-      if (y < y0) y0 = y; if (y > y1) y1 = y;
-    }));
-    return [(y0 + y1) / 2, (x0 + x1) / 2];   // [lat, lon] for Leaflet
-  }
-
   fetch('gemeindegrenze.geojson')
     .then(r => r.json())
     .then(data => {
-      // Polygon outlines
+      const AVAIL_COLOR = { low: '#e74c3c', med: '#f39c12', high: '#27ae60' };
+
       L.geoJSON(data, {
-        style: { color: '#555', weight: 2, fillColor: '#d6e4f0', fillOpacity: 0.25 }
+        style: f => ({
+          color: '#555', weight: 1.5,
+          fillColor: AVAIL_COLOR[f.properties.availability],
+          fillOpacity: 0.6
+        }),
+        onEachFeature: (f, layer) => {
+          const p = f.properties;
+          layer.bindTooltip(`<b>${p.name || ''}</b><br>Availability: ${p.availability}`);
+        }
       }).addTo(vectorMap);
-
-      // Traffic-light badge at each centroid
-      data.features.forEach(f => {
-        const p    = f.properties;
-        const acc  = p.accessibility;
-        const avail = p.availability;
-        const latlng = bboxCenter(f.geometry);
-
-        const icon = L.divIcon({
-          className: '',
-          html: `<div class="gem-marker">
-                   <div class="gem-ind">
-                     <span class="gem-dot" style="background:${TL.acc[acc]}"></span>A
-                   </div>
-                   <div class="gem-ind">
-                     <span class="gem-dot" style="background:${TL.avail[avail]}"></span>V
-                   </div>
-                 </div>`,
-          iconAnchor: [28, 10]
-        });
-
-        L.marker(latlng, { icon })
-          .bindTooltip(`<b>${p.name || ''}</b><br>Accessibility: ${acc}<br>Availability: ${avail}`)
-          .addTo(vectorMap);
-      });
     });
 
   // ── Tab switching ───────────────────────────────────────────────────────────

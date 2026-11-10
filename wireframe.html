@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard Wireframe</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://kit.fontawesome.com/53bd508d27.js" crossorigin="anonymous"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #aaa;
+      padding: 40px;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      display: flex;
+      gap: 32px;
+      align-items: flex-start;
+    }
+
+    /* ── Frame: 700 × 700 px ── */
+    .frame {
+      width: 700px;
+      height: 700px;
+      background: #f2f4f7;
+      border: 3px solid #888;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    /* ── Tab bar ── */
+    .tabbar {
+      display: flex;
+      background: #dde1e8;
+      border-bottom: 2.5px solid #c5cad4;
+      padding: 0 12px;
+      flex-shrink: 0;
+      height: 50px;
+      align-items: flex-end;
+      gap: 4px;
+    }
+    .tab {
+      padding: 0 18px;
+      height: 40px;
+      display: flex; align-items: center;
+      font-size: 18px; font-weight: 600;
+      color: #6b7585;
+      background: #cdd2db;
+      border-radius: 6px 6px 0 0;
+      cursor: pointer;
+      user-select: none;
+      border: 2px solid #c5cad4;
+      border-bottom: none;
+    }
+    .tab.active {
+      background: #f2f4f7;
+      color: #2c3e50;
+      border-bottom: 2px solid #f2f4f7;
+      margin-bottom: -2.5px;
+    }
+
+    /* ── Panels ── */
+    .panel { display: none; flex: 1; min-height: 0; }
+    .panel.active { display: flex; }
+
+    /* ── Shared primitives ── */
+    .placeholder {
+      background: #dde3ec;
+      border: 2.5px dashed #9aa4b2;
+      border-radius: 6px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      color: #7a8899; gap: 6px;
+      font-size: 19px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .placeholder .sub {
+      font-size: 15px; font-weight: 400;
+      text-transform: none; letter-spacing: 0; color: #9aa4b2;
+    }
+    .lbl {
+      font-size: 15px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      color: #7a8899; margin-bottom: 5px;
+    }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 32px; padding: 0 13px;
+      background: #e8ebf0; border: 2px solid #c5cad4; border-radius: 5px;
+      font-size: 16px; color: #3a4455;
+    }
+    .btn.primary { background: #2980b9; border-color: #2471a3; color: #fff; }
+    .input-mock {
+      height: 32px; background: #f2f4f7; border: 2px solid #c5cad4; border-radius: 5px;
+      display: flex; align-items: center; padding: 0 10px;
+      font-size: 16px; color: #aab0bb;
+    }
+    .toggle {
+      width: 38px; height: 22px; background: #2980b9;
+      border-radius: 11px; position: relative; flex-shrink: 0;
+    }
+    .toggle::after {
+      content:''; position: absolute;
+      width: 16px; height: 16px; background: #fff; border-radius: 50%;
+      top: 3px; right: 3px;
+    }
+    .toggle.off { background: #c5cad4; }
+    .toggle.off::after { right: auto; left: 3px; }
+    .slider-track {
+      flex: 1; height: 5px; background: #c5cad4; border-radius: 3px; position: relative;
+    }
+    .slider-fill { height: 100%; background: #2980b9; border-radius: 3px; }
+    .slider-thumb {
+      width: 16px; height: 16px; background: #fff;
+      border: 3px solid #2980b9; border-radius: 50%;
+      position: absolute; top: -6px;
+    }
+    .map-ctrl {
+      width: 34px; height: 34px; background: #fff;
+      border: 2px solid #c5cad4; border-radius: 5px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; color: #3a4455;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    /* ═══════════════════════════
+       PANEL 1 — RASTER MAP
+    ═══════════════════════════ */
+    #panel-raster { flex-direction: column; }
+    .raster-toolbar {
+      display: flex; gap: 7px; align-items: center;
+      padding: 8px 10px; flex-shrink: 0;
+      border-bottom: 2px solid #c5cad4; background: #fff;
+    }
+    .raster-body {
+      flex: 1; display: flex; min-height: 0;
+    }
+    .raster-left {
+      width: 185px; flex-shrink: 0;
+      display: flex; flex-direction: column;
+      padding: 12px 10px; gap: 14px;
+      background: #fff; border-right: 2px solid #c5cad4;
+    }
+    .raster-right {
+      width: 175px; flex-shrink: 0;
+      display: flex; flex-direction: column;
+      padding: 12px 10px; gap: 14px;
+      background: #fff; border-left: 2px solid #c5cad4;
+    }
+    .layer-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 0; border-bottom: 1.5px solid #f0f2f5;
+      font-size: 17px; color: #3a4455;
+    }
+    .layer-swatch { width: 16px; height: 16px; border-radius: 3px; flex-shrink: 0; }
+    .colorscale {
+      height: 16px;
+      background: linear-gradient(to right, #2166ac, #67a9cf, #d1e5f0, #fddbc7, #ef8a62, #b2182b);
+      border-radius: 3px; border: 1.5px solid #c5cad4;
+    }
+    .colorscale-labels {
+      display: flex; justify-content: space-between;
+      font-size: 14px; color: #7a8899; margin-top: 3px;
+    }
+    .basemap-btn {
+      padding: 4px 8px; background: #e8ebf0;
+      border: 2px solid #c5cad4; border-radius: 4px;
+      font-size: 15px; color: #555;
+    }
+    .basemap-btn.active {
+      background: #d6e8f7; border-color: #2980b9; color: #2980b9; font-weight: 700;
+    }
+
+    /* ═══════════════════════════
+       PANEL 2 — VECTOR DATASET
+    ═══════════════════════════ */
+    #panel-vector { flex-direction: row; }
+    .vector-toolbar {
+      display: flex; gap: 7px; align-items: center;
+      padding: 8px 10px; flex-shrink: 0;
+      border-bottom: 2px solid #c5cad4; background: #fff;
+    }
+    .vector-map-row {
+      flex: 0 0 290px; position: relative; padding: 10px;
+      border-bottom: 2px solid #c5cad4;
+    }
+    .vector-filter-row {
+      display: flex; gap: 10px; align-items: center;
+      padding: 6px 10px; flex-shrink: 0;
+      border-bottom: 2px solid #c5cad4; background: #fff;
+    }
+    .ftype-btn {
+      padding: 3px 10px; background: #e8ebf0;
+      border: 2px solid #c5cad4; border-radius: 4px;
+      font-size: 15px; color: #555;
+    }
+    .ftype-btn.active {
+      background: #d6e8f7; border-color: #2980b9; color: #2980b9; font-weight: 700;
+    }
+    .vector-table { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+    table { width: 100%; border-collapse: collapse; font-size: 16px; }
+    thead { background: #f2f4f7; }
+    th {
+      text-align: left; padding: 8px 10px;
+      border-bottom: 2.5px solid #c5cad4;
+      font-weight: 700; color: #3a4455; white-space: nowrap;
+    }
+    td {
+      padding: 7px 10px; border-bottom: 1.5px solid #edf0f4;
+      color: #3a4455; white-space: nowrap;
+    }
+    tr:nth-child(even) td { background: #f8f9fb; }
+    tr.sel td { background: #ebf5fb; }
+    .chip {
+      display: inline-block; padding: 2px 8px;
+      border-radius: 10px; font-size: 14px; font-weight: 700;
+    }
+    .chip.g { background: #d5f5e3; color: #1e8449; }
+    .chip.o { background: #fdebd0; color: #a04000; }
+    .chip.b { background: #d6eaf8; color: #1a5276; }
+
+    /* ═══════════════════════════
+       PANEL 3 — GAUGES
+    ═══════════════════════════ */
+    #panel-gauges { flex-direction: column; }
+    .kpi-row {
+      display: flex; flex-shrink: 0; height: 170px;
+      border-bottom: 2px solid #c5cad4;
+    }
+    .kpi {
+      flex: 1; padding: 14px 14px;
+      border-right: 2px solid #e8ebf0;
+      display: flex; flex-direction: column; gap: 3px;
+      background: #fff;
+    }
+    .kpi:last-child { border-right: none; }
+    .kpi-lbl { font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: #7a8899; }
+    .kpi-val { font-size: 36px; font-weight: 800; color: #2c3e50; line-height: 1; }
+    .kpi-unit { font-size: 17px; color: #9aa4b2; font-weight: 400; }
+    .kpi-delta { font-size: 15px; }
+    .kpi-delta.up { color: #27ae60; }
+    .kpi-delta.dn { color: #c0392b; }
+    .sparkline { display: flex; align-items: flex-end; gap: 3px; height: 30px; margin-top: 5px; }
+    .sb { flex: 1; border-radius: 2px 2px 0 0; opacity: 0.3; }
+    .sb.last { opacity: 1; }
+
+    .gauge-row {
+      display: flex; flex-shrink: 0; height: 195px;
+      border-bottom: 2px solid #c5cad4;
+    }
+    .gauge-col {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      border-right: 2px solid #e8ebf0;
+      padding: 8px; background: #fff;
+    }
+    .gauge-col:last-child { border-right: none; }
+    .gauge-title { font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: #7a8899; margin-bottom: 4px; }
+    .gauge-svg { width: 150px; height: 84px; }
+    .gauge-reading { font-size: 28px; font-weight: 800; color: #2c3e50; margin-top: 2px; }
+    .gauge-sub { font-size: 14px; color: #aab0bb; }
+
+    .chart-row {
+      flex: 1; display: flex; flex-direction: column;
+      padding: 12px 14px; min-height: 0;
+    }
+    .chart-title { font-size: 17px; font-weight: 700; color: #3a4455; margin-bottom: 6px; }
+    .chart-area { flex: 1; display: flex; align-items: flex-end; gap: 8px; }
+    .bar-grp { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .bar-stack { width: 100%; display: flex; flex-direction: column; gap: 1px; border-radius: 3px 3px 0 0; overflow: hidden; }
+    .bs { width: 100%; }
+    .bar-xl { font-size: 14px; color: #7a8899; }
+    .legend { display: flex; gap: 16px; margin-top: 8px; }
+    .legend-item { display: flex; align-items: center; gap: 5px; font-size: 15px; color: #3a4455; }
+    .legend-dot { width: 12px; height: 12px; border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+<div class="frame">
+  <div class="tabbar">
+    <div class="tab active" onclick="switchTab(this,'raster')">Einzelparameter</div>
+    <div class="tab" onclick="switchTab(this,'vector')">Gemeinde Aggregationen</div>
+    <div class="tab" onclick="switchTab(this,'gauges')">Nationale Übersicht</div>
+  </div>
+
+  <!-- ═══ PANEL 1 — RASTER MAP ═══ -->
+  <div id="panel-raster" class="panel active">
+    <div class="raster-toolbar">
+      <div class="btn">Pan</div>
+      <div class="btn primary">Inspect</div>
+      <div class="btn">Measure</div>
+      <div style="flex:1;"></div>
+      <div class="input-mock" style="width:170px;">Search location…</div>
+    </div>
+    <div class="raster-body">
+
+      <div class="raster-left">
+        <div>
+          <div class="lbl">Legend</div>
+          <!-- bivariate legend: color grid + axis labels -->
+          <div style="display:flex;flex-direction:column;gap:3px;">
+
+            <!-- top row: Y-axis + grid -->
+            <div style="display:flex;gap:2px;align-items:flex-start;">
+
+              <!-- Y-axis: rotated label + tick labels, both sized to grid height -->
+              <div style="display:flex;flex-direction:row;align-items:center;gap:2px;height:117px;flex-shrink:0;">
+                <div style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:13px;font-weight:700;color:#555;letter-spacing:0.3px;height:100%;display:flex;align-items:center;justify-content:center;">Accessibility → </div>
+                <div style="display:flex;flex-direction:column;justify-content:space-around;height:100%;font-size:11px;color:#7a8899;text-align:right;line-height:1;">
+                  <span>Near</span>
+                  <span>Med.</span>
+                  <span>Far</span>
+                </div>
+              </div>
+
+              <!-- color grid -->
+              <img src="legend.png" style="width:117px;height:117px;image-rendering:pixelated;border:1.5px solid #c5cad4;border-radius:3px;display:block;" />
+            </div>
+
+            <!-- X tick labels -->
+            <div style="display:flex;justify-content:space-around;font-size:11px;color:#7a8899;padding-left:36px;">
+              <span>Low</span><span>Med.</span><span>High</span>
+            </div>
+
+            <!-- X axis title -->
+            <div style="text-align:center;font-size:13px;font-weight:700;color:#555;letter-spacing:0.3px;padding-left:36px;">Availability →</div>
+
+          </div>
+        </div>
+        <div>
+          <div class="lbl">Layers</div>
+          <div class="layer-row">
+            <div class="layer-swatch" style="background:#3498db;"></div>
+            <div style="flex:1;"><i class="fa-solid fa-envelope"></i> </div>
+            <div class="toggle"></div>
+          </div>
+          <div class="layer-row">
+            <div class="layer-swatch" style="background:#e67e22;"></div>
+            <div style="flex:1;"><i class="fa-solid fa-box-open"></i> </div>
+            <div class="toggle off"></div>
+          </div>
+          <div class="layer-row">
+            <div class="layer-swatch" style="background:#2ecc71;"></div>
+            <div style="flex:1;"><i class="fa-solid fa-money-bill-transfer"></i> </div>
+            <div class="toggle off"></div>
+          </div>
+         
+        </div>
+        <div>
+          <div class="lbl">Opacity</div>
+          <div style="display:flex;align-items:center;gap:7px;">
+            <div class="slider-track">
+              <div class="slider-fill" style="width:75%;"></div>
+              <div class="slider-thumb" style="left:calc(75% - 8px);"></div>
+            </div>
+            <span style="font-size:15px;color:#3a4455;font-weight:700;">75%</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex:1;position:relative;">
+        <div id="map-raster" style="width:100%;height:100%;"></div>
+      </div>
+
+
+    </div>
+  </div>
+
+  <!-- ═══ PANEL 2 — VECTOR DATASET ═══ -->
+  <div id="panel-vector" class="panel">
+
+    <!-- Left sidebar (same structure as raster-left) -->
+    <div class="raster-left">
+
+      <div>
+        <div class="lbl">Legend</div>
+        <div class="placeholder" style="height:90px;font-size:14px;text-transform:none;letter-spacing:0;">
+          <span style="color:#9aa4b2;">vector features</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="lbl">Layers</div>
+        <div class="layer-row">
+          <div class="layer-swatch" style="background:#3498db;"></div>
+          <div style="flex:1;"><i class="fa-solid fa-envelope"></i></div>
+          <div class="toggle"></div>
+        </div>
+        <div class="layer-row">
+          <div class="layer-swatch" style="background:#e67e22;"></div>
+          <div style="flex:1;"><i class="fa-solid fa-box-open"></i></div>
+          <div class="toggle off"></div>
+        </div>
+        <div class="layer-row" style="border:none;">
+          <div class="layer-swatch" style="background:#2ecc71;"></div>
+          <div style="flex:1;"><i class="fa-solid fa-money-bill-transfer"></i></div>
+          <div class="toggle off"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="lbl">Filter</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div class="ftype-btn active">All (147)</div>
+          <div class="ftype-btn">Polygon</div>
+          <div class="ftype-btn">Line</div>
+          <div class="ftype-btn">Point</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Map area -->
+    <div style="flex:1;display:flex;flex-direction:column;">
+      <div class="vector-toolbar">
+        <div class="btn">Pan</div>
+        <div class="btn primary">Select</div>
+        <div class="btn">Buffer</div>
+        <div style="flex:1;"></div>
+        <div class="input-mock" style="width:150px;">Search…</div>
+      </div>
+      <div style="flex:1;position:relative;padding:10px;">
+        <div class="placeholder" style="width:100%;height:100%;">
+          <span>Vector Features</span>
+          <span class="sub">Points · Lines · Polygons</span>
+        </div>
+        <div style="position:absolute;top:18px;right:18px;display:flex;flex-direction:column;gap:5px;">
+          <div class="map-ctrl">+</div>
+          <div class="map-ctrl">−</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══ PANEL 3 — AGGREGATE GAUGES ═══ -->
+  <div id="panel-gauges" class="panel">
+
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="kpi-lbl">Total Area</div>
+        <div class="kpi-val">3,842<br><span class="kpi-unit">km²</span></div>
+        <div class="kpi-delta up">▲ 2.4%</div>
+        <div class="sparkline">
+          <div class="sb" style="height:40%;background:#3498db;"></div><div class="sb" style="height:55%;background:#3498db;"></div><div class="sb" style="height:62%;background:#3498db;"></div><div class="sb" style="height:70%;background:#3498db;"></div><div class="sb" style="height:80%;background:#3498db;"></div><div class="sb last" style="height:88%;background:#3498db;"></div>
+        </div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-lbl">Features</div>
+        <div class="kpi-val">147</div>
+        <div class="kpi-delta dn">▼ 3 items</div>
+        <div class="sparkline">
+          <div class="sb" style="height:72%;background:#e74c3c;"></div><div class="sb" style="height:75%;background:#e74c3c;"></div><div class="sb" style="height:72%;background:#e74c3c;"></div><div class="sb" style="height:70%;background:#e74c3c;"></div><div class="sb" style="height:66%;background:#e74c3c;"></div><div class="sb last" style="height:62%;background:#e74c3c;"></div>
+        </div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-lbl">Avg. Precip.</div>
+        <div class="kpi-val">612<br><span class="kpi-unit">mm/yr</span></div>
+        <div class="kpi-delta up">▲ 8.1%</div>
+        <div class="sparkline">
+          <div class="sb" style="height:45%;background:#2ecc71;"></div><div class="sb" style="height:58%;background:#2ecc71;"></div><div class="sb" style="height:65%;background:#2ecc71;"></div><div class="sb" style="height:75%;background:#2ecc71;"></div><div class="sb" style="height:82%;background:#2ecc71;"></div><div class="sb last" style="height:90%;background:#2ecc71;"></div>
+        </div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-lbl">Coverage</div>
+        <div class="kpi-val">78<span class="kpi-unit">%</span></div>
+        <div class="kpi-delta up">▲ 5%</div>
+        <div class="sparkline">
+          <div class="sb" style="height:50%;background:#9b59b6;"></div><div class="sb" style="height:60%;background:#9b59b6;"></div><div class="sb" style="height:65%;background:#9b59b6;"></div><div class="sb" style="height:70%;background:#9b59b6;"></div><div class="sb" style="height:75%;background:#9b59b6;"></div><div class="sb last" style="height:78%;background:#9b59b6;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="gauge-row">
+      <div class="gauge-col">
+        <div class="gauge-title">Data Quality</div>
+        <svg class="gauge-svg" viewBox="0 0 150 84">
+          <path d="M 8 80 A 67 67 0 0 1 142 80" fill="none" stroke="#e8ebf0" stroke-width="13" stroke-linecap="round"/>
+          <path d="M 8 80 A 67 67 0 0 1 142 80" fill="none" stroke="#27ae60" stroke-width="13" stroke-linecap="round"
+                stroke-dasharray="210" stroke-dashoffset="31"/>
+          <text x="75" y="73" text-anchor="middle" font-size="24" font-weight="800" fill="#2c3e50">85%</text>
+        </svg>
+        <div class="gauge-sub">Good · threshold 70%</div>
+      </div>
+      <div class="gauge-col">
+        <div class="gauge-title">Proc. Load</div>
+        <svg class="gauge-svg" viewBox="0 0 150 84">
+          <path d="M 8 80 A 67 67 0 0 1 142 80" fill="none" stroke="#e8ebf0" stroke-width="13" stroke-linecap="round"/>
+          <path d="M 8 80 A 67 67 0 0 1 142 80" fill="none" stroke="#f39c12" stroke-width="13" stroke-linecap="round"
+                stroke-dasharray="210" stroke-dashoffset="105"/>
+          <text x="75" y="73" text-anchor="middle" font-size="24" font-weight="800" fill="#2c3e50">50%</text>
+        </svg>
+        <div class="gauge-sub">Moderate · 4 cores</div>
+      </div>
+      <div class="gauge-col">
+        <div class="gauge-title">Completeness</div>
+        <svg class="gauge-svg" viewBox="0 0 150 84">
+          <path d="M 8 80 A 67 67 0 0 1 142 80" fill="none" stroke="#e8ebf0" stroke-width="13" stroke-linecap="round"/>
+          <path d="M 8 80 A 67 67 0 0 1 142 80" fill="none" stroke="#e74c3c" stroke-width="13" stroke-linecap="round"
+                stroke-dasharray="210" stroke-dashoffset="158"/>
+          <text x="75" y="73" text-anchor="middle" font-size="24" font-weight="800" fill="#2c3e50">25%</text>
+        </svg>
+        <div class="gauge-sub">Low · needs attention</div>
+      </div>
+    </div>
+
+    <div class="chart-row">
+      <div class="chart-title">Monthly Aggregates by Region</div>
+      <div class="chart-area">
+        <div class="bar-grp"><div class="bar-stack" style="height:75px;"><div class="bs" style="height:40%;background:#3498db;"></div><div class="bs" style="height:35%;background:#2ecc71;"></div><div class="bs" style="height:25%;background:#e74c3c;"></div></div><div class="bar-xl">Jan</div></div>
+        <div class="bar-grp"><div class="bar-stack" style="height:95px;"><div class="bs" style="height:45%;background:#3498db;"></div><div class="bs" style="height:30%;background:#2ecc71;"></div><div class="bs" style="height:25%;background:#e74c3c;"></div></div><div class="bar-xl">Feb</div></div>
+        <div class="bar-grp"><div class="bar-stack" style="height:65px;"><div class="bs" style="height:50%;background:#3498db;"></div><div class="bs" style="height:25%;background:#2ecc71;"></div><div class="bs" style="height:25%;background:#e74c3c;"></div></div><div class="bar-xl">Mar</div></div>
+        <div class="bar-grp"><div class="bar-stack" style="height:108px;"><div class="bs" style="height:40%;background:#3498db;"></div><div class="bs" style="height:40%;background:#2ecc71;"></div><div class="bs" style="height:20%;background:#e74c3c;"></div></div><div class="bar-xl">Apr</div></div>
+        <div class="bar-grp"><div class="bar-stack" style="height:85px;"><div class="bs" style="height:35%;background:#3498db;"></div><div class="bs" style="height:40%;background:#2ecc71;"></div><div class="bs" style="height:25%;background:#e74c3c;"></div></div><div class="bar-xl">May</div></div>
+        <div class="bar-grp"><div class="bar-stack" style="height:118px;"><div class="bs" style="height:50%;background:#3498db;"></div><div class="bs" style="height:30%;background:#2ecc71;"></div><div class="bs" style="height:20%;background:#e74c3c;"></div></div><div class="bar-xl">Jun</div></div>
+        <div class="bar-grp"><div class="bar-stack" style="height:100px;"><div class="bs" style="height:45%;background:#3498db;"></div><div class="bs" style="height:35%;background:#2ecc71;"></div><div class="bs" style="height:20%;background:#e74c3c;"></div></div><div class="bar-xl">Jul</div></div>
+        <div class="bar-grp"><div class="bar-stack" style="height:82px;"><div class="bs" style="height:40%;background:#3498db;"></div><div class="bs" style="height:35%;background:#2ecc71;"></div><div class="bs" style="height:25%;background:#e74c3c;"></div></div><div class="bar-xl">Aug</div></div>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#3498db;"></div>Region A</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#2ecc71;"></div>Region B</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#e74c3c;"></div>Region C</div>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- /frame -->
+
+<script>
+  const BOUNDS = [[47.361924, 8.610190], [47.412530, 8.712478]];
+
+  const rasterMap = L.map('map-raster', { zoomControl: true, attributionControl: false })
+    .fitBounds(BOUNDS);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19
+  }).addTo(rasterMap);
+
+  L.imageOverlay('bivariate.png', BOUNDS, { opacity: 0.75 }).addTo(rasterMap);
+
+  function switchTab(el, name) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('panel-' + name).classList.add('active');
+    if (name === 'raster') rasterMap.invalidateSize();
+  }
+</script>
+
+</body>
+</html>

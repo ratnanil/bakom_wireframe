@@ -1,0 +1,22 @@
+# ── Large source data ─────────────────────────────────────────
+*.gpkg
+*.shp
+*.dbf
+*.shx
+*.prj
+
+# ── Intermediate / generated raster files ────────────────────
+bivariate.tif
+bivariate_raw.tif
+*.aux.xml
+
+# ── Logs ──────────────────────────────────────────────────────
+*.log
+
+# ── Project documents (not for wireframe) ────────────────────
+WG__Offertanfrage_*/
+
+# ── Python ────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+.env

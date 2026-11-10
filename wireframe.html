@@ -621,7 +621,7 @@
     el.classList.add('active');
     document.getElementById('panel-' + name).classList.add('active');
     if (name === 'raster') rasterMap.invalidateSize();
-    if (name === 'vector') vectorMap.invalidateSize();
+    if (name === 'vector') { vectorMap.invalidateSize(); vectorMap.fitBounds(BOUNDS); }
   }
 </script>
 

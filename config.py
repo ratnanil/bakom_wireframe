@@ -4,8 +4,9 @@ Both generate_raster.py and prepare_vector.py import from here.
 """
 
 # ── Bounding box (WGS84 / EPSG:4326) ─────────────────────────────────────────
-LON_MIN, LAT_MIN = 8.631302, 47.393974
-LON_MAX, LAT_MAX = 8.828406, 47.511779
+import fiona
+with fiona.open('boundingbox.gpkg') as _src:
+    LON_MIN, LAT_MIN, LON_MAX, LAT_MAX = _src.bounds
 
 # ── Input files ───────────────────────────────────────────────────────────────
 GPKG_PATH  = 'swissBOUNDARIES3D_1_5_LV95_LN02.gpkg'
